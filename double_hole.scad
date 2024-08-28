@@ -6,6 +6,8 @@ OUTER_DIAM = 7.5;
 
 magnet_shell();
 
+function tangent(r, bx,by) = [r*r*bx + r*by * sqrt(by*by+bx*bx - r*r), r*r*by + r*bx * sqrt(by*by+bx*bx - r*r)] / (by*by+bx*bx);
+
 difference() {
   union() {
     for (y=[-STUD_DIST/2, STUD_DIST/2]) {
@@ -15,8 +17,17 @@ difference() {
 	}
       }
     }
-    translate([-STUD_DIST/2+GAP,-4.5,MAGNET_HEIGHT]) {
-      cube([STUD_DIST-2*GAP, 9,STUD_DIST*1.8-MAGNET_HEIGHT]);
+    echo([tangent(-OUTER_DIAM/2, 0, -STUD_DIST*1.5+MAGNET_HEIGHT)]);
+    translate([-STUD_DIST/2+GAP,0,0]) {
+      rotate([90,0,90]) {
+	linear_extrude(height=STUD_DIST-2*GAP) {
+	  polygon([tangent(OUTER_DIAM/2, 0, -STUD_DIST*1.5+MAGNET_HEIGHT) + [-STUD_DIST/2, STUD_DIST*1.5],
+		   [-STUD_DIST/2, STUD_DIST*1.5+OUTER_DIAM/2],
+		   [STUD_DIST/2, STUD_DIST*1.5+OUTER_DIAM/2],
+		   tangent(-OUTER_DIAM/2, 0, -STUD_DIST*1.5+MAGNET_HEIGHT) + [STUD_DIST/2, STUD_DIST*1.5],
+		   [STUD_DIST/2, MAGNET_HEIGHT], [-STUD_DIST/2, MAGNET_HEIGHT]]) ;
+	}
+      }
     }
   }
   for (y=[-STUD_DIST/2, STUD_DIST/2]) {
